@@ -21,10 +21,8 @@ wheels/
 *.egg
 
 # Virtual Environment
-.env
-.venv
-env/
 venv/
+env/
 ENV/
 
 # IDE
@@ -33,10 +31,23 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-data/*.json
+# Logs
 *.log
+logs/
 
-# OS specific
+# Data files
+data/
+*.json
+
+# AWS
+.aws/
+aws_config.json
+.env
+.env.*
+
+# OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Project specific
+scripts/uploaders/config.py 
