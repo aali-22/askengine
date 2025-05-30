@@ -11,7 +11,6 @@ AskEngine is a natural language query system for sports statistics, powering Ask
   - 🏀 AskHoop (Basketball)
 - Structured data responses
 - CLI interface
-- Extensible architecture
 
 ## Installation
 
@@ -60,18 +59,6 @@ This project uses publicly available sports statistics from:
 - Basketball-Reference
 
 All data usage complies with fair use policies and provides proper attribution.
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
