@@ -1,6 +1,16 @@
 # AskEngine Sports Data Pipeline
 
-A comprehensive sports data pipeline for fetching, organizing, and analyzing MLB and NBA data.
+AskEngine is a natural language query system for sports statistics, powering AskLabs' suite of sport-specific intelligence tools. It enables users to query sports data using natural language and get structured, accurate responses.
+
+## Features
+
+- Natural language processing for sports queries
+- Support for multiple sports domains:
+  - ⚽ AskFooty (Soccer/Football)
+  - ⚾ AskSlugger (Baseball)
+  - 🏀 AskHoop (Basketball)
+- Structured data responses
+- CLI interface
 
 ## Project Structure
 
@@ -92,4 +102,9 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Data providers: FBref, Baseball-Reference, Basketball-Reference
+- Open source community for various tools and libraries used in this project
