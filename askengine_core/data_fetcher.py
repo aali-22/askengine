@@ -4,6 +4,7 @@ Handles API requests, rate limiting, and caching.
 """
 import time
 import json
+import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 import requests
@@ -46,6 +47,8 @@ NBA_HEADERS = {
     'Sec-Fetch-Site': 'same-site'
 }
 
+logger = logging.getLogger(__name__)
+
 class DataFetcher:
     """Base class for fetching data from APIs with rate limiting and caching"""
     
@@ -72,13 +75,17 @@ class DataFetcher:
         )
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
         self.session.mount('https://', HTTPAdapter(max_retries=retries))
+        
+        logger.info(f"Initialized DataFetcher with cache_dir={cache_dir}, rate_limit={rate_limit}")
     
     def _wait_for_rate_limit(self):
         """Ensure we don't exceed rate limit"""
         now = time.time()
         time_since_last = now - self.last_request_time
         if time_since_last < self.rate_limit:
-            time.sleep(self.rate_limit - time_since_last)
+            sleep_time = self.rate_limit - time_since_last
+            logger.debug(f"Rate limiting: sleeping for {sleep_time:.2f}s")
+            time.sleep(sleep_time)
         self.last_request_time = time.time()
     
     def _get_cache_path(self, url: str, params: Optional[Dict] = None) -> Path:
@@ -91,14 +98,24 @@ class DataFetcher:
     def _load_cache(self, cache_path: Path) -> Optional[Dict]:
         """Load cached response if it exists"""
         if cache_path.exists():
-            with cache_path.open('r') as f:
-                return json.load(f)
+            try:
+                with cache_path.open('r') as f:
+                    data = json.load(f)
+                logger.debug(f"Loaded cached response from {cache_path}")
+                return data
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to load cache from {cache_path}: {str(e)}")
+                return None
         return None
     
     def _save_cache(self, cache_path: Path, data: Dict):
         """Save response to cache"""
-        with cache_path.open('w') as f:
-            json.dump(data, f)
+        try:
+            with cache_path.open('w') as f:
+                json.dump(data, f)
+            logger.debug(f"Saved response to cache at {cache_path}")
+        except Exception as e:
+            logger.error(f"Failed to save cache to {cache_path}: {str(e)}")
     
     def fetch(self, url: str, params: Optional[Dict] = None, headers: Optional[Dict] = None, use_cache: bool = True, verify_ssl: bool = True) -> Dict:
         """
@@ -113,6 +130,10 @@ class DataFetcher:
             
         Returns:
             JSON response data
+            
+        Raises:
+            requests.exceptions.RequestException: If request fails
+            ValueError: If response is not valid JSON
         """
         cache_path = self._get_cache_path(url, params)
         
@@ -126,16 +147,23 @@ class DataFetcher:
         self._wait_for_rate_limit()
         
         try:
+            logger.info(f"Fetching data from {url}")
             response = self.session.get(url, params=params, headers=headers, verify=verify_ssl, timeout=30)
             response.raise_for_status()
-            data = response.json()
+            
+            try:
+                data = response.json()
+            except ValueError as e:
+                logger.error(f"Invalid JSON response from {url}: {str(e)}")
+                raise ValueError(f"Invalid JSON response from {url}") from e
             
             # Cache response
             self._save_cache(cache_path, data)
             
             return data
+            
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching {url}: {str(e)}")
+            logger.error(f"Error fetching {url}: {str(e)}")
             raise
 
 class BaseballDataFetcher(DataFetcher):
