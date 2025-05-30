@@ -28,7 +28,7 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 
 ## Use a Consistent Coding Style
 
-* Use 4 spaces for indentation rather than tabs
+* Use 4 spaces for indentation rather than tabs(different lengths in different editors)
 * Keep line length under 100 characters
 * Run `pylint` for style enforcement
 * Write tests for new code
